@@ -133,6 +133,28 @@ docker compose up -d          # a 1ª vez baixa .NET + mods e gera o mundo (algu
 docker compose logs -f        # acompanhe; espere "Server started"
 ```
 
+Um primeiro boot saudável se parece com isto (trimado) — quando aparecer **`Server started`**, está no ar:
+
+<details>
+<summary>📟 Exemplo de saída do console do servidor</summary>
+
+```text
+[SYSTEM] Finished downloading mods.
+Adding Content: Recipe Browser v0.12
+Adding Content: Boss Checklist v2.2.4
+Adding Content: Census - Town NPC Checklist v0.5.2.7
+Adding Content: AlchemistNPC Lite v1.9.9
+Adding Content: Ore Excavator (1.4.3/1.4.4 Veinminer) v0.8.9
+[SYSTEM] Finished loading mods.
+...
+95.7% - Generating structures..Standard Minecart Tracks - 80.0%
+96.0% - Generating structures..Lava Traps
+Listening on port 7777
+Type 'help' for a list of commands.
+Server started
+```
+</details>
+
 Pronto — seu servidor com mods está no ar em `ip-do-servidor:7777`. Pule para [Como os jogadores conectam](#como-os-jogadores-conectam).
 
 ---

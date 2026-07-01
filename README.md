@@ -136,6 +136,28 @@ docker compose up -d          # first run downloads .NET + mods and generates th
 docker compose logs -f        # watch progress; wait for "Server started"
 ```
 
+A healthy first boot looks like this (trimmed) — once you see **`Server started`**, you're live:
+
+<details>
+<summary>📟 Example server console output</summary>
+
+```text
+[SYSTEM] Finished downloading mods.
+Adding Content: Recipe Browser v0.12
+Adding Content: Boss Checklist v2.2.4
+Adding Content: Census - Town NPC Checklist v0.5.2.7
+Adding Content: AlchemistNPC Lite v1.9.9
+Adding Content: Ore Excavator (1.4.3/1.4.4 Veinminer) v0.8.9
+[SYSTEM] Finished loading mods.
+...
+95.7% - Generating structures..Standard Minecart Tracks - 80.0%
+96.0% - Generating structures..Lava Traps
+Listening on port 7777
+Type 'help' for a list of commands.
+Server started
+```
+</details>
+
 That's it — your modded Terraria server is live on `your-server-ip:7777`. Skip to [How players connect](#how-players-connect).
 
 ---
