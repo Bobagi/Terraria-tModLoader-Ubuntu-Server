@@ -1,0 +1,38 @@
+# Terraria + tModLoader dedicated server (modded), Docker Compose.
+# Full walkthrough: see the repository README.
+#
+# Image: github.com/JACOBSMILE/tmodloader1.4 — auto-downloads Steam Workshop mods
+# by ID, no Steam account needed. We build a thin derived image on top of it to add
+# libicu (see ./Dockerfile) because recent base images ship without it and the .NET
+# runtime crash-loops on startup ("Couldn't find a valid ICU package").
+services:
+  tmodloader:
+    build: .                          # derived image = base + libicu (see Dockerfile)
+    image: tmodloader-libicu:latest
+    container_name: tmodloader
+    restart: unless-stopped
+    stdin_open: true                  # keep STDIN open — the server console reads from it
+    tty: true                         # allocate a TTY; without it the server hits EOF and exits 0 (restart loop)
+    stop_grace_period: 90s            # give the server time to save the world on shutdown
+    ports:
+      - "7777:7777"                   # Terraria protocol is TCP 7777; must be reachable directly (no reverse proxy)
+    volumes:
+      - ./data:/data                  # world, mods and cached .NET persist here
+    env_file:
+      - .env                          # TMOD_PASS=<your server password>   (copy from .env.example)
+    environment:
+      TMOD_WORLDNAME: "MyWorld"
+      TMOD_WORLDSIZE: "1"             # 1=Small, 2=Medium, 3=Large
+      TMOD_DIFFICULTY: "1"            # 0=Classic/Normal, 1=Expert, 2=Master, 3=Journey
+      TMOD_MAXPLAYERS: "8"
+      TMOD_PORT: "7777"
+      TMOD_AUTOSAVE_INTERVAL: "10"    # minutes
+      # Steam Workshop mod IDs. Players must run tModLoader with these same mods.
+      # This example = a light quality-of-life pack:
+      #   Recipe Browser, Magic Storage, Boss Checklist, Census, AlchemistNPC Lite, Ore Excavator
+      TMOD_AUTODOWNLOAD: "2619954303,2563309347,2669644269,2687866031,2599842771,2565639705"
+      TMOD_ENABLEDMODS:  "2619954303,2563309347,2669644269,2687866031,2599842771,2565639705"
+    # RAM safety net: cap memory so a heavy modlist (e.g. Calamity) can't OOM the whole
+    # host. A small world + light mods idles around ~1 GB; raise these for big modpacks.
+    mem_limit: 4g
+    memswap_limit: 5g

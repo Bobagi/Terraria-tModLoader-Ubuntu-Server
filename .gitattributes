@@ -1,0 +1,10 @@
+# The real content of this repository is documentation, not code.
+# Help GitHub's language stats reflect that.
+*.md linguist-documentation=false
+*.yml linguist-language=YAML
+Dockerfile linguist-language=Dockerfile
+*.service linguist-documentation=true
+serverconfig.txt.example linguist-documentation=true
+
+# Keep shell/line endings sane across OSes
+* text=auto eol=lf

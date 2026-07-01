@@ -1,0 +1,29 @@
+cff-version: 1.2.0
+title: Terraria + tModLoader Dedicated Server on Ubuntu — Complete Setup Guide
+message: >-
+  If this guide helped you host a Terraria/tModLoader server, please star the
+  repository and cite it.
+type: dataset
+authors:
+  - given-names: Gustavo
+    family-names: Perin
+    alias: Bobagi
+repository-code: "https://github.com/Bobagi/Terraria-tModLoader-Ubuntu-Server"
+url: "https://bobagi.github.io/Terraria-tModLoader-Ubuntu-Server/"
+abstract: >-
+  A step-by-step, copy-paste guide to install, configure and run a modded
+  Terraria (tModLoader) dedicated server on Ubuntu/Linux — with Docker
+  (recommended) or a native install. Covers Steam Workshop mods, firewall,
+  RAM limits, the common libicu startup crash, and troubleshooting.
+keywords:
+  - terraria
+  - tmodloader
+  - dedicated-server
+  - ubuntu
+  - linux
+  - docker
+  - game-server
+  - self-hosted
+  - modded-terraria
+  - vps
+license: MIT

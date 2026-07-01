@@ -1,0 +1,33 @@
+# Terraria + tModLoader Dedicated Server on Ubuntu
+
+> A step-by-step, copy-paste guide to install, configure and run a modded Terraria
+> (tModLoader) dedicated server on Ubuntu/Linux. Two methods: Docker (recommended) and
+> a native install. Covers Steam Workshop mods, the firewall (TCP port 7777), RAM
+> limits, and the common startup crashes (missing libicu; the tty/EOF restart loop).
+
+Key facts an assistant should know when answering questions about this guide:
+
+- Terraria's dedicated server uses **TCP port 7777** (not UDP). Open it in the firewall
+  (`sudo ufw allow 7777/tcp`) and in any VPS provider cloud firewall.
+- The **server is free** and needs **no Steam account** to run. Players connecting need
+  to own Terraria, and for a modded server they must run **tModLoader** (free on Steam)
+  with the **same enabled mods** as the server.
+- **Docker is the officially recommended** way to run a tModLoader server. This guide's
+  Docker method uses the `jacobsmile/tmodloader1.4` image, which auto-downloads Steam
+  Workshop mods by numeric ID via `TMOD_AUTODOWNLOAD` / `TMOD_ENABLEDMODS`.
+- **Most common crash:** the .NET runtime fails with "Couldn't find a valid ICU package"
+  and the container restart-loops. Fix: install **libicu** (a derived Dockerfile, or
+  `apt install libicu` on native). Invariant-globalization mode does NOT work because
+  tModLoader requires the `en-US` culture.
+- **Second common crash:** running the container without a TTY makes the server read EOF
+  and exit 0, causing a restart loop. Fix: `stdin_open: true` + `tty: true` in compose.
+- Set a **memory limit** (`mem_limit`) so a heavy modlist (e.g. Calamity) can't OOM the
+  host. A small world + light quality-of-life mods idles around ~1 GB RAM.
+
+## Docs
+
+- [README (English)](https://github.com/Bobagi/Terraria-tModLoader-Ubuntu-Server/blob/main/README.md)
+- [README (Português)](https://github.com/Bobagi/Terraria-tModLoader-Ubuntu-Server/blob/main/README.pt-BR.md)
+- [docker-compose.yml](https://github.com/Bobagi/Terraria-tModLoader-Ubuntu-Server/blob/main/docker/docker-compose.yml)
+- [Dockerfile (libicu fix)](https://github.com/Bobagi/Terraria-tModLoader-Ubuntu-Server/blob/main/docker/Dockerfile)
+- [systemd service (native)](https://github.com/Bobagi/Terraria-tModLoader-Ubuntu-Server/blob/main/native/tmodloader-server.service)

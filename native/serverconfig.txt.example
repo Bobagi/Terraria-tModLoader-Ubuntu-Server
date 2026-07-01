@@ -1,0 +1,23 @@
+# tModLoader / Terraria dedicated server config.
+# Pass it with:  ./start-tModLoaderServer.sh -config serverconfig.txt
+# Lines starting with # are comments. Remove the # to activate a setting.
+
+# --- World ---
+world=/home/terraria/.local/share/Terraria/tModLoader/Worlds/MyWorld.wld
+worldpath=/home/terraria/.local/share/Terraria/tModLoader/Worlds/
+worldname=MyWorld
+autocreate=1            # create the world if it doesn't exist. 1=Small, 2=Medium, 3=Large
+difficulty=1            # 0=Classic/Normal, 1=Expert, 2=Master, 3=Journey
+seed=
+
+# --- Players / network ---
+maxplayers=8
+port=7777
+password=change-me-to-a-strong-password
+motd=Welcome to the server!
+
+# --- Mods ---
+# Point this at the modpack folder that holds your enabled.json (and install.txt).
+# See the README "Installing mods (native)" section for how to generate it.
+# modpath=/home/terraria/.local/share/Terraria/tModLoader/Mods
+# modpack=/home/terraria/.local/share/Terraria/tModLoader/ModPacks/MyPack

@@ -1,0 +1,18 @@
+# Secrets — never commit your real server password
+.env
+docker/.env
+
+# Server runtime data (worlds, mods, cached .NET) — generated at runtime
+docker/data/
+data/
+
+# Logs
+*.log
+logs/
+
+# OS / editor junk
+.DS_Store
+Thumbs.db
+*.swp
+.idea/
+.vscode/

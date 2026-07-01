@@ -1,0 +1,31 @@
+# systemd unit for a native (non-Docker) tModLoader dedicated server.
+# Auto-starts the server on boot and restarts it if it crashes.
+#
+# Install:
+#   sudo cp tmodloader-server.service /etc/systemd/system/
+#   sudo systemctl daemon-reload
+#   sudo systemctl enable --now tmodloader-server
+#   journalctl -u tmodloader-server -f        # live logs
+#
+# Adjust User/paths to match your install (this assumes the manage-tModLoaderServer.sh
+# layout under /home/terraria). See the repository README, "Native install" section.
+[Unit]
+Description=tModLoader (modded Terraria) dedicated server
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=terraria
+Group=terraria
+WorkingDirectory=/home/terraria/tModLoaderServer
+# Runs the launcher headless with a config file (no interactive prompts).
+ExecStart=/home/terraria/tModLoaderServer/start-tModLoaderServer.sh -nosteam -config /home/terraria/tModLoaderServer/serverconfig.txt
+# Graceful stop: tModLoader saves and exits on SIGTERM; give it time.
+KillSignal=SIGTERM
+TimeoutStopSec=90
+Restart=on-failure
+RestartSec=10
+
+[Install]
+WantedBy=multi-user.target
