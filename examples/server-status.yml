@@ -1,0 +1,67 @@
+# Live "server online/offline" badge for YOUR OWN Terraria server, powered entirely by
+# GitHub Actions — no third-party status service, no exposing your IP inside the guide.
+#
+# It TCP-pings your server every 15 minutes and writes a Shields.io "endpoint" JSON to a
+# dedicated `badges` branch (so it never clutters your main branch history).
+#
+# ── SETUP (about 2 minutes) ────────────────────────────────────────────────────────────
+#   1. Copy this file to:  .github/workflows/server-status.yml   in your own repository.
+#   2. Your repo → Settings → Secrets and variables → Actions → Variables tab → New variable:
+#         TERRARIA_HOST = your.server.ip.or.hostname     (required)
+#         TERRARIA_PORT = 7777                           (optional; defaults to 7777)
+#      Using a repository Variable keeps your IP out of the committed workflow file.
+#   3. Add the badge to your README (replace OWNER/REPO with your repo):
+#         ![Server status](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/OWNER/REPO/badges/server-status.json)
+#   4. Run it once by hand: Actions tab → "Terraria server status" → Run workflow.
+# ────────────────────────────────────────────────────────────────────────────────────────
+name: Terraria server status
+
+on:
+  schedule:
+    - cron: "*/15 * * * *"   # every 15 minutes
+  workflow_dispatch:          # lets you run it manually from the Actions tab
+
+permissions:
+  contents: write             # needed to push the badge JSON to the `badges` branch
+
+concurrency:
+  group: server-status
+  cancel-in-progress: true
+
+jobs:
+  status:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ping the server (TCP)
+        id: ping
+        run: |
+          HOST="${{ vars.TERRARIA_HOST }}"
+          PORT="${{ vars.TERRARIA_PORT }}"; PORT="${PORT:-7777}"
+          if [ -z "$HOST" ]; then
+            echo "::error::Set the TERRARIA_HOST repository variable (Settings → Secrets and variables → Actions → Variables)."
+            exit 1
+          fi
+          if timeout 5 bash -c "true > /dev/tcp/$HOST/$PORT" 2>/dev/null; then
+            echo "message=online"    >> "$GITHUB_OUTPUT"
+            echo "color=brightgreen" >> "$GITHUB_OUTPUT"
+          else
+            echo "message=offline"   >> "$GITHUB_OUTPUT"
+            echo "color=red"         >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Publish the badge JSON to the 'badges' branch
+        env:
+          MESSAGE: ${{ steps.ping.outputs.message }}
+          COLOR: ${{ steps.ping.outputs.color }}
+        run: |
+          work="$(mktemp -d)" && cd "$work"
+          # Shields.io "endpoint" schema:
+          printf '{"schemaVersion":1,"label":"terraria server","message":"%s","color":"%s"}\n' \
+            "$MESSAGE" "$COLOR" > server-status.json
+          git init -q
+          git config user.name  "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git checkout -q --orphan badges
+          git add server-status.json
+          git commit -q -m "server status: $MESSAGE"
+          git push -q -f "https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}.git" badges

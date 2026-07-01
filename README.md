@@ -24,11 +24,12 @@
 5. [Installing mods](#installing-mods)
 6. [How players connect](#how-players-connect)
 7. [Server management](#server-management)
-8. [Troubleshooting](#troubleshooting)
-9. [FAQ](#faq)
-10. [Recommended quality-of-life mods](#recommended-quality-of-life-mods)
-11. [Acknowledgements](#acknowledgements)
-12. [License](#license)
+8. [Add a live server-status badge (optional)](#add-a-live-server-status-badge-optional)
+9. [Troubleshooting](#troubleshooting)
+10. [FAQ](#faq)
+11. [Recommended quality-of-life mods](#recommended-quality-of-life-mods)
+12. [Acknowledgements](#acknowledgements)
+13. [License](#license)
 
 ---
 
@@ -289,6 +290,31 @@ tar czf backup-$(date +%F).tar.gz docker/data/tModLoader/Worlds
 ```bash
 tar czf backup-$(date +%F).tar.gz ~/.local/share/Terraria/tModLoader/Worlds
 ```
+
+---
+
+## Add a live server-status badge (optional)
+
+Want a badge that shows whether **your** server is online, like this?
+`![Server status](https://img.shields.io/badge/terraria%20server-online-brightgreen)`
+
+You can build it with **GitHub Actions only** — no third-party service, and without putting your server's IP anywhere public except your own repository's private settings. A ready-to-copy workflow is included at [`examples/server-status.yml`](examples/server-status.yml).
+
+**Setup (about 2 minutes):**
+
+1. Copy [`examples/server-status.yml`](examples/server-status.yml) to `.github/workflows/server-status.yml` in **your** repository.
+2. Go to **Settings → Secrets and variables → Actions → Variables** and add:
+   - `TERRARIA_HOST` = your server's IP or hostname *(required)*
+   - `TERRARIA_PORT` = `7777` *(optional)*
+3. Add the badge to your README (replace `OWNER/REPO`):
+   ```markdown
+   ![Server status](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/OWNER/REPO/badges/server-status.json)
+   ```
+4. Run it once from the **Actions** tab to publish the first status.
+
+The workflow TCP-pings your server every 15 minutes and writes a small [Shields.io endpoint](https://shields.io/badges/endpoint-badge) JSON to a dedicated `badges` branch (it never clutters your `main` history). Keeping the host in a **repository Variable** means your IP stays out of the committed files.
+
+> 🔒 **A note on privacy:** a status badge publishes your server's address wherever the badge is shown. If you plan to hide your origin IP behind a CDN/proxy later, prefer pointing `TERRARIA_HOST` at a **hostname** you control rather than a raw IP.
 
 ---
 

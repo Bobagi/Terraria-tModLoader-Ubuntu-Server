@@ -23,11 +23,12 @@
 5. [Instalando mods](#instalando-mods)
 6. [Como os jogadores conectam](#como-os-jogadores-conectam)
 7. [Gerenciamento do servidor](#gerenciamento-do-servidor)
-8. [Solução de problemas](#solução-de-problemas)
-9. [Perguntas frequentes (FAQ)](#perguntas-frequentes-faq)
-10. [Mods de qualidade de vida recomendados](#mods-de-qualidade-de-vida-recomendados)
-11. [Créditos](#créditos)
-12. [Licença](#licença)
+8. [Badge de status do servidor (opcional)](#badge-de-status-do-servidor-opcional)
+9. [Solução de problemas](#solução-de-problemas)
+10. [Perguntas frequentes (FAQ)](#perguntas-frequentes-faq)
+11. [Mods de qualidade de vida recomendados](#mods-de-qualidade-de-vida-recomendados)
+12. [Créditos](#créditos)
+13. [Licença](#licença)
 
 ---
 
@@ -284,6 +285,31 @@ tar czf backup-$(date +%F).tar.gz docker/data/tModLoader/Worlds
 ```bash
 tar czf backup-$(date +%F).tar.gz ~/.local/share/Terraria/tModLoader/Worlds
 ```
+
+---
+
+## Badge de status do servidor (opcional)
+
+Quer um badge mostrando se o **seu** servidor está online, assim?
+`![Server status](https://img.shields.io/badge/terraria%20server-online-brightgreen)`
+
+Dá pra montar **só com GitHub Actions** — sem serviço de terceiros, e sem colocar o IP do seu servidor em nenhum lugar público além das configurações privadas do seu repositório. Um workflow pronto pra copiar está em [`examples/server-status.yml`](examples/server-status.yml).
+
+**Setup (uns 2 minutos):**
+
+1. Copie [`examples/server-status.yml`](examples/server-status.yml) para `.github/workflows/server-status.yml` no **seu** repositório.
+2. Vá em **Settings → Secrets and variables → Actions → Variables** e adicione:
+   - `TERRARIA_HOST` = o IP ou hostname do seu servidor *(obrigatório)*
+   - `TERRARIA_PORT` = `7777` *(opcional)*
+3. Adicione o badge no seu README (troque `OWNER/REPO`):
+   ```markdown
+   ![Server status](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/OWNER/REPO/badges/server-status.json)
+   ```
+4. Rode uma vez pela aba **Actions** pra publicar o primeiro status.
+
+O workflow faz um TCP-ping no seu servidor a cada 15 minutos e escreve um JSON de [endpoint do Shields.io](https://shields.io/badges/endpoint-badge) numa branch dedicada `badges` (nunca suja o histórico da `main`). Guardar o host numa **Variable do repositório** mantém seu IP fora dos arquivos commitados.
+
+> 🔒 **Sobre privacidade:** um badge de status publica o endereço do seu servidor onde quer que ele apareça. Se você pretende esconder o IP de origem atrás de um CDN/proxy depois, aponte o `TERRARIA_HOST` para um **hostname** que você controla, em vez do IP cru.
 
 ---
 
