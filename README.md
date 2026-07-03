@@ -24,12 +24,14 @@
 5. [Installing mods](#installing-mods)
 6. [How players connect](#how-players-connect)
 7. [Server management](#server-management)
-8. [Add a live server-status badge (optional)](#add-a-live-server-status-badge-optional)
-9. [Troubleshooting](#troubleshooting)
-10. [FAQ](#faq)
-11. [Recommended quality-of-life mods](#recommended-quality-of-life-mods)
-12. [Acknowledgements](#acknowledgements)
-13. [License](#license)
+8. [Keep the server updated automatically](#keep-the-server-updated-automatically-fix-you-are-not-using-the-same-version-as-this-server)
+9. [Add a live server-status badge (optional)](#add-a-live-server-status-badge-optional)
+10. [Live status web page (players online, CPU/RAM, mods)](#live-status-web-page-players-online-cpuram-mods)
+11. [Troubleshooting](#troubleshooting)
+12. [FAQ](#faq)
+13. [Recommended quality-of-life mods](#recommended-quality-of-life-mods)
+14. [Acknowledgements](#acknowledgements)
+15. [License](#license)
 
 ---
 
@@ -112,9 +114,20 @@ Open `docker-compose.yml` and adjust the `environment:` block:
 
 The included example enables a light quality-of-life pack (see [Recommended mods](#recommended-quality-of-life-mods)). To play **Calamity**, swap in its Workshop IDs and raise `mem_limit`.
 
-### 5. Understand the `Dockerfile` (the `libicu` fix)
+### 5. Understand the `Dockerfile` (the `libicu` fix + version pin)
 
-The compose file builds a **thin derived image**: the base image + `libicu`. This is not optional — without it the .NET runtime inside the container **crash-loops on startup** with `Couldn't find a valid ICU package`. See [Troubleshooting](#troubleshooting) for the full story. You don't have to do anything; `docker compose` builds it for you.
+The compose file builds a **thin derived image** with two fixes on top of the base:
+
+1. **`libicu`** — not optional: without it the .NET runtime inside the container
+   **crash-loops on startup** with `Couldn't find a valid ICU package`. See
+   [Troubleshooting](#troubleshooting) for the full story.
+2. **A pinned tModLoader version** (`ARG TMOD_VERSION`) — the base image bakes the game
+   binaries in at build time and goes stale, while Steam auto-updates every player.
+   The Dockerfile overlays the **official release zip from GitHub** so your server runs
+   the exact version you pin. See
+   [Keep the server updated automatically](#keep-the-server-updated-automatically-fix-you-are-not-using-the-same-version-as-this-server).
+
+You don't have to do anything; `docker compose` builds it for you.
 
 ### 6. Open the firewall (TCP 7777)
 
@@ -315,6 +328,50 @@ tar czf backup-$(date +%F).tar.gz ~/.local/share/Terraria/tModLoader/Worlds
 
 ---
 
+## Keep the server updated automatically (fix: "You are not using the same version as this server")
+
+tModLoader ships a **stable release roughly every month**, and **Steam updates every
+player automatically**. The day that happens, a server still on last month's build
+rejects everyone with:
+
+```
+You are not using the same version as this server.
+```
+
+The base Docker image can't save you here — it bakes the game binaries in at build
+time, so `:latest` is only as fresh as its last rebuild. This guide's
+[`docker/Dockerfile`](docker/Dockerfile) fixes that with a **version-pinned overlay**:
+it downloads the official release zip from
+[tModLoader's GitHub releases](https://github.com/tModLoader/tModLoader/releases)
+(the exact build Steam ships) on top of the base image, pinned by `ARG TMOD_VERSION`.
+
+**Manual update** (any time a new stable lands):
+
+```bash
+cd /opt/terraria-tmodloader
+sed -i 's|^ARG TMOD_VERSION=.*|ARG TMOD_VERSION=v2026.05.3.0|' Dockerfile  # new tag
+docker compose build && docker compose up -d
+```
+
+**Automatic update** — copy [`examples/auto-update.sh`](examples/auto-update.sh) and run
+it daily from cron. It checks GitHub for a new stable tag, **postpones if players are
+online**, backs up the world, bumps the pin, rebuilds and recreates:
+
+```bash
+sudo cp examples/auto-update.sh /opt/terraria-tmodloader/auto-update.sh
+sudo chmod +x /opt/terraria-tmodloader/auto-update.sh
+echo '17 9 * * * root /opt/terraria-tmodloader/auto-update.sh >/dev/null 2>&1' \
+  | sudo tee /etc/cron.d/tmodloader-autoupdate
+```
+
+> 🧩 **Mod dependencies can change between versions.** After a major bump, watch the
+> first boot log: a mod may gain a new required library and be auto-disabled with
+> `Missing mod: X required by Y`. Fix: add the library's Workshop ID to
+> `TMOD_AUTODOWNLOAD`/`TMOD_ENABLEDMODS` (e.g. Magic Storage needs *SerousCommonLib*,
+> ID `2908170107`, since tML 2026.05).
+
+---
+
 ## Add a live server-status badge (optional)
 
 Want a badge that shows whether **your** server is online, like this?
@@ -337,6 +394,24 @@ You can build it with **GitHub Actions only** — no third-party service, and wi
 The workflow TCP-pings your server every 15 minutes and writes a small [Shields.io endpoint](https://shields.io/badges/endpoint-badge) JSON to a dedicated `badges` branch (it never clutters your `main` history). Keeping the host in a **repository Variable** means your IP stays out of the committed files.
 
 > 🔒 **A note on privacy:** a status badge publishes your server's address wherever the badge is shown. If you plan to hide your origin IP behind a CDN/proxy later, prefer pointing `TERRARIA_HOST` at a **hostname** you control rather than a raw IP.
+
+---
+
+## Live status web page (players online, CPU/RAM, mods)
+
+Want a full **status page** your players can bookmark — who's online, server CPU/RAM,
+the mod list with Workshop links, the tModLoader version, and a *"Launch tModLoader"*
+button? That's a separate companion project:
+
+**➡️ [Bobagi/terraria-status](https://github.com/Bobagi/terraria-status)** — a
+zero-dependency Node.js app that polls the Docker container from this guide
+(`docker stats` + the console's `playing` command) and serves a themed live dashboard.
+Live example: **[terraria.bobagi.space](https://terraria.bobagi.space)**.
+
+It is designed for exactly the setup this guide produces (the JACOBSMILE image's
+`inject` helper and tmux console), takes ~10 minutes to deploy behind nginx + certbot,
+and is careful about safety: it never exposes the console log (which contains your
+server password), never publishes player IPs, and binds to `127.0.0.1` only.
 
 ---
 

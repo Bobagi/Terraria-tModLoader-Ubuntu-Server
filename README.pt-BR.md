@@ -23,12 +23,14 @@
 5. [Instalando mods](#instalando-mods)
 6. [Como os jogadores conectam](#como-os-jogadores-conectam)
 7. [Gerenciamento do servidor](#gerenciamento-do-servidor)
-8. [Badge de status do servidor (opcional)](#badge-de-status-do-servidor-opcional)
-9. [Solução de problemas](#solução-de-problemas)
-10. [Perguntas frequentes (FAQ)](#perguntas-frequentes-faq)
-11. [Mods de qualidade de vida recomendados](#mods-de-qualidade-de-vida-recomendados)
-12. [Créditos](#créditos)
-13. [Licença](#licença)
+8. [Mantenha o servidor atualizado automaticamente](#mantenha-o-servidor-atualizado-automaticamente-fix-you-are-not-using-the-same-version-as-this-server)
+9. [Badge de status do servidor (opcional)](#badge-de-status-do-servidor-opcional)
+10. [Página web de status ao vivo (jogadores online, CPU/RAM, mods)](#página-web-de-status-ao-vivo-jogadores-online-cpuram-mods)
+11. [Solução de problemas](#solução-de-problemas)
+12. [Perguntas frequentes (FAQ)](#perguntas-frequentes-faq)
+13. [Mods de qualidade de vida recomendados](#mods-de-qualidade-de-vida-recomendados)
+14. [Créditos](#créditos)
+15. [Licença](#licença)
 
 ---
 
@@ -109,9 +111,20 @@ Abra o `docker-compose.yml` e ajuste o bloco `environment:`:
 
 O exemplo já vem com um pacote leve de qualidade de vida (veja [Mods recomendados](#mods-de-qualidade-de-vida-recomendados)). Para jogar **Calamity**, troque pelos IDs dele e aumente o `mem_limit`.
 
-### 5. Entenda o `Dockerfile` (o fix do `libicu`)
+### 5. Entenda o `Dockerfile` (o fix do `libicu` + pin de versão)
 
-O compose constrói uma **imagem derivada**: a imagem base + `libicu`. Isso **não é opcional** — sem ele o runtime .NET dentro do container entra em **loop de crash** com `Couldn't find a valid ICU package`. Veja [Solução de problemas](#solução-de-problemas). Você não precisa fazer nada; o `docker compose` constrói pra você.
+O compose constrói uma **imagem derivada** com dois fixes em cima da base:
+
+1. **`libicu`** — não é opcional: sem ele o runtime .NET dentro do container entra em
+   **loop de crash** com `Couldn't find a valid ICU package`. Veja
+   [Solução de problemas](#solução-de-problemas).
+2. **Versão do tModLoader pinada** (`ARG TMOD_VERSION`) — a imagem base embute os
+   binários do jogo no build e envelhece, enquanto a Steam atualiza todos os jogadores
+   sozinha. O Dockerfile sobrepõe o **zip oficial de release do GitHub**, então seu
+   servidor roda exatamente a versão pinada. Veja
+   [Mantenha o servidor atualizado automaticamente](#mantenha-o-servidor-atualizado-automaticamente-fix-you-are-not-using-the-same-version-as-this-server).
+
+Você não precisa fazer nada; o `docker compose` constrói pra você.
 
 ### 6. Abra o firewall (TCP 7777)
 
@@ -310,6 +323,50 @@ tar czf backup-$(date +%F).tar.gz ~/.local/share/Terraria/tModLoader/Worlds
 
 ---
 
+## Mantenha o servidor atualizado automaticamente (fix: "You are not using the same version as this server")
+
+O tModLoader lança uma **release stable mais ou menos todo mês**, e a **Steam atualiza
+todos os jogadores automaticamente**. No dia em que isso acontece, um servidor parado na
+versão do mês passado rejeita todo mundo com:
+
+```
+You are not using the same version as this server.
+```
+
+A imagem base do Docker não te salva — ela embute os binários no build, então o
+`:latest` só é tão novo quanto o último rebuild dela. O
+[`docker/Dockerfile`](docker/Dockerfile) deste guia resolve com um **overlay de versão
+pinada**: baixa o zip oficial das
+[releases do tModLoader no GitHub](https://github.com/tModLoader/tModLoader/releases)
+(o mesmo build que a Steam distribui) por cima da base, pinado pelo `ARG TMOD_VERSION`.
+
+**Atualização manual** (quando sair uma stable nova):
+
+```bash
+cd /opt/terraria-tmodloader
+sed -i 's|^ARG TMOD_VERSION=.*|ARG TMOD_VERSION=v2026.05.3.0|' Dockerfile  # tag nova
+docker compose build && docker compose up -d
+```
+
+**Atualização automática** — copie o [`examples/auto-update.sh`](examples/auto-update.sh)
+e rode diariamente via cron. Ele checa o GitHub por tag stable nova, **adia se houver
+jogadores online**, faz backup do mundo, sobe o pin, rebuilda e recria:
+
+```bash
+sudo cp examples/auto-update.sh /opt/terraria-tmodloader/auto-update.sh
+sudo chmod +x /opt/terraria-tmodloader/auto-update.sh
+echo '17 9 * * * root /opt/terraria-tmodloader/auto-update.sh >/dev/null 2>&1' \
+  | sudo tee /etc/cron.d/tmodloader-autoupdate
+```
+
+> 🧩 **Dependências de mods podem mudar entre versões.** Depois de um bump grande,
+> olhe o primeiro boot: um mod pode ganhar uma biblioteca obrigatória nova e ser
+> desabilitado com `Missing mod: X required by Y`. Fix: adicione o ID da biblioteca ao
+> `TMOD_AUTODOWNLOAD`/`TMOD_ENABLEDMODS` (ex.: Magic Storage precisa da
+> *SerousCommonLib*, ID `2908170107`, desde o tML 2026.05).
+
+---
+
 ## Badge de status do servidor (opcional)
 
 Quer um badge mostrando se o **seu** servidor está online, assim?
@@ -332,6 +389,24 @@ Dá pra montar **só com GitHub Actions** — sem serviço de terceiros, e sem c
 O workflow faz um TCP-ping no seu servidor a cada 15 minutos e escreve um JSON de [endpoint do Shields.io](https://shields.io/badges/endpoint-badge) numa branch dedicada `badges` (nunca suja o histórico da `main`). Guardar o host numa **Variable do repositório** mantém seu IP fora dos arquivos commitados.
 
 > 🔒 **Sobre privacidade:** um badge de status publica o endereço do seu servidor onde quer que ele apareça. Se você pretende esconder o IP de origem atrás de um CDN/proxy depois, aponte o `TERRARIA_HOST` para um **hostname** que você controla, em vez do IP cru.
+
+---
+
+## Página web de status ao vivo (jogadores online, CPU/RAM, mods)
+
+Quer uma **página de status** completa pros seus jogadores salvarem nos favoritos — quem
+está online, CPU/RAM do servidor, a lista de mods com links da Workshop, a versão do
+tModLoader e um botão *"Abrir tModLoader"*? Isso é um projeto companheiro separado:
+
+**➡️ [Bobagi/terraria-status](https://github.com/Bobagi/terraria-status)** — um app
+Node.js sem dependências que consulta o container Docker deste guia (`docker stats` +
+o comando `playing` do console) e serve um dashboard ao vivo temático.
+Exemplo no ar: **[terraria.bobagi.space](https://terraria.bobagi.space)**.
+
+Ele foi desenhado exatamente pro setup que este guia produz (o helper `inject` e o
+console em tmux da imagem JACOBSMILE), leva ~10 minutos pra subir atrás de nginx +
+certbot, e é cuidadoso com segurança: nunca expõe o log do console (que contém a senha
+do servidor), nunca publica IP de jogador, e só escuta em `127.0.0.1`.
 
 ---
 

@@ -23,6 +23,19 @@ Key facts an assistant should know when answering questions about this guide:
   and exit 0, causing a restart loop. Fix: `stdin_open: true` + `tty: true` in compose.
 - Set a **memory limit** (`mem_limit`) so a heavy modlist (e.g. Calamity) can't OOM the
   host. A small world + light quality-of-life mods idles around ~1 GB RAM.
+- **Version-mismatch kick:** tModLoader ships a stable release ~monthly and Steam
+  auto-updates every player, so a stale server rejects clients with "You are not using
+  the same version as this server". Fix: pin the version in the Dockerfile
+  (`ARG TMOD_VERSION`, overlaying the official GitHub release zip) and bump it — the
+  guide ships `examples/auto-update.sh` (cron) that updates automatically and postpones
+  while players are online.
+- **Mod dependencies can change across versions:** after an update, a mod may be
+  auto-disabled with "Missing mod: X required by Y" — add the missing library's Workshop
+  ID to `TMOD_AUTODOWNLOAD`/`TMOD_ENABLEDMODS` (e.g. Magic Storage requires
+  SerousCommonLib, ID 2908170107, since tML 2026.05).
+- A companion project provides a **live status web page** (players online, CPU/RAM, mod
+  list, version, launch button): https://github.com/Bobagi/terraria-status — live demo
+  at https://terraria.bobagi.space.
 
 ## Docs
 
@@ -31,3 +44,5 @@ Key facts an assistant should know when answering questions about this guide:
 - [docker-compose.yml](https://github.com/Bobagi/Terraria-tModLoader-Ubuntu-Server/blob/main/docker/docker-compose.yml)
 - [Dockerfile (libicu fix)](https://github.com/Bobagi/Terraria-tModLoader-Ubuntu-Server/blob/main/docker/Dockerfile)
 - [systemd service (native)](https://github.com/Bobagi/Terraria-tModLoader-Ubuntu-Server/blob/main/native/tmodloader-server.service)
+- [auto-update script (cron)](https://github.com/Bobagi/Terraria-tModLoader-Ubuntu-Server/blob/main/examples/auto-update.sh)
+- [Live status page companion project](https://github.com/Bobagi/terraria-status)
