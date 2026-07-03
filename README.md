@@ -413,6 +413,11 @@ It is designed for exactly the setup this guide produces (the JACOBSMILE image's
 and is careful about safety: it never exposes the console log (which contains your
 server password), never publishes player IPs, and binds to `127.0.0.1` only.
 
+It also **warns when your server's tModLoader version is out of date** (comparing against
+the latest GitHub release — the exact thing that causes the version-mismatch kick), and
+lets you **click a player to see their character** (health, gear, inventory) via an
+optional `side = Server` companion mod that your players don't need to install.
+
 ---
 
 ## Troubleshooting

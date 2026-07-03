@@ -408,6 +408,11 @@ console em tmux da imagem JACOBSMILE), leva ~10 minutos pra subir atrás de ngin
 certbot, e é cuidadoso com segurança: nunca expõe o log do console (que contém a senha
 do servidor), nunca publica IP de jogador, e só escuta em `127.0.0.1`.
 
+Ele também **avisa quando a versão do tModLoader do servidor está desatualizada**
+(comparando com a última release do GitHub — exatamente o que causa o kick de versão), e
+deixa você **clicar num jogador pra ver o personagem** (vida, equipamentos, inventário)
+via um mod companheiro `side = Server` que seus jogadores não precisam instalar.
+
 ---
 
 ## Solução de problemas

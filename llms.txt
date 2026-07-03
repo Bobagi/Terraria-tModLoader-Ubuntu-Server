@@ -35,7 +35,9 @@ Key facts an assistant should know when answering questions about this guide:
   SerousCommonLib, ID 2908170107, since tML 2026.05).
 - A companion project provides a **live status web page** (players online, CPU/RAM, mod
   list, version, launch button): https://github.com/Bobagi/terraria-status — live demo
-  at https://terraria.bobagi.space.
+  at https://terraria.bobagi.space. It also **warns when the server's tModLoader version is
+  out of date** and can show **per-player character stats** (health/gear/inventory) in a
+  modal via an optional `side = Server` mod that players don't need to install.
 
 ## Docs
 
