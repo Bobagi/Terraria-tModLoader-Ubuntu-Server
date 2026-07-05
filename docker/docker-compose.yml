@@ -29,9 +29,12 @@ services:
       TMOD_AUTOSAVE_INTERVAL: "10"    # minutes
       # Steam Workshop mod IDs. Players must run tModLoader with these same mods.
       # This example = a light quality-of-life pack:
-      #   Recipe Browser, Magic Storage, Boss Checklist, Census, AlchemistNPC Lite, Ore Excavator
-      TMOD_AUTODOWNLOAD: "2619954303,2563309347,2669644269,2687866031,2599842771,2565639705"
-      TMOD_ENABLEDMODS:  "2619954303,2563309347,2669644269,2687866031,2599842771,2565639705"
+      #   Recipe Browser, Magic Storage, Boss Checklist, Census, AlchemistNPC Lite,
+      #   Ore Excavator, and Steam Achievement Fix (3021379176 — side=Both, so it's
+      #   forced onto every joining client and unlocks each player's Steam Terraria
+      #   achievements while playing modded; see the FAQ).
+      TMOD_AUTODOWNLOAD: "2619954303,2563309347,2669644269,2687866031,2599842771,2565639705,3021379176"
+      TMOD_ENABLEDMODS:  "2619954303,2563309347,2669644269,2687866031,2599842771,2565639705,3021379176"
     # RAM safety net: cap memory so a heavy modlist (e.g. Calamity) can't OOM the whole
     # host. A small world + light mods idles around ~1 GB; raise these for big modpacks.
     mem_limit: 4g

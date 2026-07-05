@@ -509,6 +509,9 @@ A: **Hetzner** and **Vultr** offer great price/performance; **Hostinger** is bud
 **Q: How do I make the server restart automatically after a reboot or crash?**
 A: Docker: `restart: unless-stopped` (already set). Native: the provided **systemd** unit with `Restart=on-failure` and `systemctl enable`.
 
+**Q: Why don't my Steam achievements unlock while playing on a tModLoader server?**
+A: tModLoader tracks Terraria's achievements internally but doesn't push them to Steam by default, so nothing shows up on your Steam profile. Add the **Steam Achievement Fix** mod (Workshop ID `3021379176`) to `TMOD_AUTODOWNLOAD`/`TMOD_ENABLEDMODS`. It's a `side = Both` mod, so once the **server** enables it every joining player is required to have it too (tModLoader auto-prompts the download on connect) — and each player's achievements then sync to **their own** Steam Terraria profile automatically, with nothing to configure. Caveat: it can't grant achievements that only exist in Terraria 1.4.5, since tModLoader is still on 1.4.4.9.
+
 ---
 
 ## Recommended quality-of-life mods
@@ -523,6 +526,7 @@ A tested, lightweight pack that improves multiplayer without changing game balan
 | Census – Town NPC Checklist | `2687866031` | What each town NPC needs to move in |
 | AlchemistNPC Lite | `2599842771` | An NPC that sells potions & ingredients |
 | Ore Excavator | `2565639705` | Vein-mining (mine a whole ore vein at once) |
+| Steam Achievement Fix | `3021379176` | Syncs your Terraria achievements to Steam while playing modded (they don't fire on tModLoader otherwise). `side = Both`, so the server forces it onto every player automatically — see the [FAQ](#faq). |
 
 Want content mods instead? Add **Calamity**, **Thorium**, **Spirit**, etc. by their Workshop IDs — just remember to raise `mem_limit` and have every player enable them.
 

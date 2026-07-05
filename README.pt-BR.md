@@ -504,6 +504,9 @@ R: **Hetzner** e **Vultr** têm ótimo custo/benefício; **Hostinger** é econô
 **P: Como faço o servidor reiniciar sozinho após reboot ou crash?**
 R: Docker: `restart: unless-stopped` (já vem setado). Nativo: o unit **systemd** com `Restart=on-failure` e `systemctl enable`.
 
+**P: Por que minhas conquistas da Steam não destravam jogando num servidor tModLoader?**
+R: O tModLoader controla as conquistas do Terraria internamente, mas não as envia pra Steam por padrão — então nada aparece no seu perfil. Adicione o mod **Steam Achievement Fix** (ID da Workshop `3021379176`) em `TMOD_AUTODOWNLOAD`/`TMOD_ENABLEDMODS`. É um mod `side = Both`, então quando o **servidor** habilita, todo jogador que entrar é obrigado a ter também (o tModLoader baixa sozinho ao conectar) — e as conquistas de cada um passam a sincronizar com o **próprio** perfil do Terraria na Steam, automaticamente, sem configurar nada. Ressalva: ele não concede conquistas que só existem no Terraria 1.4.5, já que o tModLoader ainda está no 1.4.4.9.
+
 ---
 
 ## Mods de qualidade de vida recomendados
@@ -518,6 +521,7 @@ Um pacote leve e testado que melhora o multiplayer sem mexer no balanceamento. S
 | Census – Town NPC Checklist | `2687866031` | O que cada NPC precisa pra aparecer |
 | AlchemistNPC Lite | `2599842771` | NPC que vende poções e ingredientes |
 | Ore Excavator | `2565639705` | Vein-mining (mina o filão inteiro de uma vez) |
+| Steam Achievement Fix | `3021379176` | Sincroniza suas conquistas do Terraria com a Steam jogando modado (sem ele não destravam no tModLoader). `side = Both`, então o servidor força em todo jogador automaticamente — veja o [FAQ](#perguntas-frequentes-faq). |
 
 Quer mods de conteúdo? Adicione **Calamity**, **Thorium**, **Spirit** etc. pelos IDs da Workshop — só lembre de aumentar o `mem_limit` e todo jogador ativar eles.
 
