@@ -18,8 +18,8 @@
 ## Índice
 1. [Por que este guia?](#por-que-este-guia)
 2. [Pré-requisitos](#pré-requisitos)
-3. [Método A, Docker (recomendado)](#método-a--docker-recomendado)
-4. [Método B, Instalação nativa](#método-b--instalação-nativa-sem-docker)
+3. [Método A, Docker (recomendado)](#método-a---docker-recomendado)
+4. [Método B, Instalação nativa](#método-b---instalação-nativa-sem-docker)
 5. [Instalando mods](#instalando-mods)
 6. [Como os jogadores conectam](#como-os-jogadores-conectam)
 7. [Gerenciamento do servidor](#gerenciamento-do-servidor)

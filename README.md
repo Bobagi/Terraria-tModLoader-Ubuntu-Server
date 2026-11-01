@@ -19,8 +19,8 @@
 ## Table of Contents
 1. [Why this guide?](#why-this-guide)
 2. [Prerequisites](#prerequisites)
-3. [Method A, Docker (recommended)](#method-a--docker-recommended)
-4. [Method B, Native install](#method-b--native-install-no-docker)
+3. [Method A, Docker (recommended)](#method-a---docker-recommended)
+4. [Method B, Native install](#method-b---native-install-no-docker)
 5. [Installing mods](#installing-mods)
 6. [How players connect](#how-players-connect)
 7. [Server management](#server-management)
