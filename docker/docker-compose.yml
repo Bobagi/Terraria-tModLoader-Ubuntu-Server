@@ -1,7 +1,7 @@
 # Terraria + tModLoader dedicated server (modded), Docker Compose.
 # Full walkthrough: see the repository README.
 #
-# Image: github.com/JACOBSMILE/tmodloader1.4 — auto-downloads Steam Workshop mods
+# Image: github.com/JACOBSMILE/tmodloader1.4 - auto-downloads Steam Workshop mods
 # by ID, no Steam account needed. We build a thin derived image on top of it to add
 # libicu (see ./Dockerfile) because recent base images ship without it and the .NET
 # runtime crash-loops on startup ("Couldn't find a valid ICU package").
@@ -11,7 +11,7 @@ services:
     image: tmodloader-libicu:latest
     container_name: tmodloader
     restart: unless-stopped
-    stdin_open: true                  # keep STDIN open — the server console reads from it
+    stdin_open: true                  # keep STDIN open, the server console reads from it
     tty: true                         # allocate a TTY; without it the server hits EOF and exits 0 (restart loop)
     stop_grace_period: 90s            # give the server time to save the world on shutdown
     ports:
@@ -30,11 +30,12 @@ services:
       # Steam Workshop mod IDs. Players must run tModLoader with these same mods.
       # This example = a light quality-of-life pack:
       #   Recipe Browser, Magic Storage, Boss Checklist, Census, AlchemistNPC Lite,
-      #   Ore Excavator, and Steam Achievement Fix (3021379176 — side=Both, so it's
+      #   Ore Excavator, and Steam Achievement Fix (3021379176, side=Both, so it's
       #   forced onto every joining client and unlocks each player's Steam Terraria
-      #   achievements while playing modded; see the FAQ).
-      TMOD_AUTODOWNLOAD: "2619954303,2563309347,2669644269,2687866031,2599842771,2565639705,3021379176"
-      TMOD_ENABLEDMODS:  "2619954303,2563309347,2669644269,2687866031,2599842771,2565639705,3021379176"
+      #   achievements while playing modded; see the FAQ), plus Fargo's Mutant Mod
+      #   (2570931073, instant bridges/houses/hellevators, also side=Both).
+      TMOD_AUTODOWNLOAD: "2619954303,2563309347,2669644269,2687866031,2599842771,2565639705,3021379176,2570931073"
+      TMOD_ENABLEDMODS:  "2619954303,2563309347,2669644269,2687866031,2599842771,2565639705,3021379176,2570931073"
     # RAM safety net: cap memory so a heavy modlist (e.g. Calamity) can't OOM the whole
     # host. A small world + light mods idles around ~1 GB; raise these for big modpacks.
     mem_limit: 4g
