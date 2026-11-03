@@ -524,6 +524,7 @@ Um pacote leve e testado que melhora o multiplayer sem mexer no balanceamento. S
 | Steam Achievement Fix | `3021379176` | Sincroniza suas conquistas do Terraria com a Steam jogando modado (sem ele não destravam no tModLoader). `side = Both`, então o servidor força em todo jogador automaticamente, veja o [FAQ](#perguntas-frequentes-faq). |
 | Fargo's Mutant Mod | `2570931073` | Construção instantânea (Instabridge, InstaHouse, Instavator) e o NPC Mutant, que vende invocações de bosses. `side = Both`, então cada jogador baixa ao entrar |
 | Fargo's Souls Mod | `2815540735` | Encantamentos, Souls e bosses novos; Eternity Mode opcional. Precisa do Fargo's Mutant Mod e do **Luminance** (`3222493606`): liste os dois, o servidor não baixa dependências sozinho |
+| No Pylon Restrictions | `2812377597` | Tira o limite de um Pylon por tipo, útil em mundo grande ou alargado. Por padrão ele remove **todas** as regras dos Pylons; para manter as outras como no jogo normal, use em `ModConfigs/NoPylonRestrictions_Config.json`: `{"typelimit": true, "rangelimit": false, "npclimit": false, "biomelimit": false, "dangerlimit": false, "preplantera": false, "sellpylons": "Off"}` (config do servidor, sincronizada com os jogadores). `side = Both` |
 
 Quer mods de conteúdo? Adicione **Calamity**, **Thorium**, **Spirit** etc. pelos IDs da Workshop, só lembre de aumentar o `mem_limit` e todo jogador ativar eles.
 

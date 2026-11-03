@@ -529,6 +529,7 @@ A tested, lightweight pack that improves multiplayer without changing game balan
 | Steam Achievement Fix | `3021379176` | Syncs your Terraria achievements to Steam while playing modded (they don't fire on tModLoader otherwise). `side = Both`, so the server forces it onto every player automatically, see the [FAQ](#faq). |
 | Fargo's Mutant Mod | `2570931073` | Instant builds (Instabridge, InstaHouse, Instavator) and the Mutant NPC, who sells boss summons. `side = Both`, so every player downloads it on join |
 | Fargo's Souls Mod | `2815540735` | Enchantments, Souls and new bosses; optional Eternity Mode. Needs Fargo's Mutant Mod and **Luminance** (`3222493606`): list both, the server does not fetch dependencies on its own |
+| No Pylon Restrictions | `2812377597` | Lifts the one-pylon-per-type limit, handy in a big or widened world. By default it drops **every** pylon rule; to keep the others vanilla, set `ModConfigs/NoPylonRestrictions_Config.json` to `{"typelimit": true, "rangelimit": false, "npclimit": false, "biomelimit": false, "dangerlimit": false, "preplantera": false, "sellpylons": "Off"}` (server-side config, synced to players). `side = Both` |
 
 Want content mods instead? Add **Calamity**, **Thorium**, **Spirit**, etc. by their Workshop IDs, just remember to raise `mem_limit` and have every player enable them.
 
